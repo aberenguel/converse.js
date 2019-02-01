@@ -29,15 +29,15 @@
             let show_modal_button = view.el.querySelector('.show-user-details-modal');
             expect(u.isVisible(show_modal_button)).toBeTruthy();
             show_modal_button.click();
+            console.log('show_modal_button.click();');
             const modal = view.user_details_modal;
-            await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
             spyOn(window, 'confirm').and.returnValue(true);
             spyOn(view.model.contact, 'removeFromRoster').and.callFake(function (callback) {
                 callback();
             });
             let remove_contact_button = modal.el.querySelector('button.remove-contact');
-            expect(u.isVisible(remove_contact_button)).toBeTruthy();
             remove_contact_button.click();
+            console.log('remove_contact_button.click();');
             await test_utils.waitUntil(() => modal.el.getAttribute('aria-hidden'), 1000);
 
             show_modal_button = view.el.querySelector('.show-user-details-modal');
