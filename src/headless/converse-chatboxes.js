@@ -587,7 +587,8 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 return this.messages.findWhere({
                     'origin_id': origin_id.getAttribute('id'),
-                    'from': stanza.getAttribute('from')
+                    'from': (stanza.getAttribute('type') == 'groupchat')
+                        ? stanza.getAttribute('from') : Strophe.getBareJidFromJid(stanza.getAttribute('from'))
                 });
             },
 
@@ -749,7 +750,7 @@ converse.plugins.add('converse-chatboxes', {
             getOutgoingMessageAttributes (text, spoiler_hint) {
                 const is_spoiler = this.get('composing_spoiler');
                 const origin_id = _converse.connection.getUniqueId();
-                return {
+                const attrs = {
                     'id': origin_id,
                     'jid': this.get('jid'),
                     'nickname': this.get('nickname'),
@@ -765,6 +766,8 @@ converse.plugins.add('converse-chatboxes', {
                     'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
                     'type': this.get('message_type')
                 }
+                attrs[`stanza_id ${_converse.bare_jid}`] = origin_id;
+                return attrs;
             },
 
             /**

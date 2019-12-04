@@ -75,7 +75,8 @@ converse.plugins.add('converse-mam', {
                 }
                 const most_recent_msg = this.getMostRecentMessage();
                 if (most_recent_msg) {
-                    const stanza_id = most_recent_msg.get(`stanza_id ${this.get('jid')}`);
+                    const by_jid = (this.get('message_type') == 'chat') ? _converse.bare_jid : this.get('jid');
+                    const stanza_id = most_recent_msg.get(`stanza_id ${by_jid}`);
                     if (stanza_id) {
                         this.fetchArchivedMessages({'after': stanza_id}, 'forwards');
                     } else {
@@ -154,16 +155,12 @@ converse.plugins.add('converse-mam', {
                 }
             },
 
-            async findDuplicateFromArchiveID (stanza) {
+            findDuplicateFromArchiveID (stanza) {
                 const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
                 if (!result) {
                     return null;
                 }
-                const by_jid = stanza.getAttribute('from') || this.get('jid');
-                const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
-                if (!supported) {
-                    return null;
-                }
+                const by_jid = stanza.getAttribute('from') || _converse.bare_jid;
                 const query = {};
                 query[`stanza_id ${by_jid}`] = result.getAttribute('id');
                 return this.messages.findWhere(query);

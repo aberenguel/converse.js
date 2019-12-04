@@ -1451,11 +1451,10 @@ converse.plugins.add('converse-muc', {
                 // Overridden in converse-muc and converse-mam
                 const attrs = _converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, stanza);
                 if (this.isOwnMessage(message)) {
-                    const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-                    const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
-                    if (by_jid) {
-                        const key = `stanza_id ${by_jid}`;
-                        attrs[key] = stanza_id.getAttribute('id');
+                    const by_jid = this.get('jid');
+                    const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"][by="${by_jid}}"]`, stanza).pop();
+                    if (stanza_id) {
+                        attrs[`stanza_id ${by_jid}`] = stanza_id.getAttribute('id');
                     }
                     if (!message.get('received')) {
                         attrs.received = (new Date()).toISOString();
